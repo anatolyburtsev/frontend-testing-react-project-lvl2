@@ -20,3 +20,11 @@ $ make run
 ```
 
 [![asciicast](https://asciinema.org/a/oHmnBx0IeUno06x9gH9rFrsj6.svg)](https://asciinema.org/a/oHmnBx0IeUno06x9gH9rFrsj6)
+
+
+### Run tests
+```shell
+$ make test
+```
+[![asciicast](https://asciinema.org/a/w4HSTamJw9zHFVRjebkFThsU4.svg)](https://asciinema.org/a/w4HSTamJw9zHFVRjebkFThsU4)
+
