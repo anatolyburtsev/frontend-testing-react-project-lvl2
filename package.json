@@ -1,0 +1,28 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "simple todo app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anatolyburtsev/frontend-testing-react-project-lvl2.git"
+  },
+  "author": "Anatolii Burtsev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anatolyburtsev/frontend-testing-react-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/anatolyburtsev/frontend-testing-react-project-lvl2#readme",
+  "dependencies": {
+    "@hexlet/react-todo-app-with-backend": "^0.10.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.29.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jest": "^24.3.6"
+  }
+}
