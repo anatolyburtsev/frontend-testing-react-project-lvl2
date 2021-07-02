@@ -1,5 +1,5 @@
 import {
-  render, screen, waitFor,
+  render, screen, waitFor, waitForElementToBeRemoved,
 } from '@testing-library/react';
 import App from '@hexlet/react-todo-app-with-backend';
 import '@testing-library/jest-dom/extend-expect';
@@ -38,7 +38,6 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 let todoListPage;
-let appContainer;
 class TodoListPage {
   constructor(appScreen) {
     this.screen = appScreen;
@@ -68,15 +67,19 @@ class TodoListPage {
   }
 
   async addList(name) {
-    const addListButton = appContainer.querySelector('button[type="submit"]');
+    const addListButton = this.screen.getByTestId('list-form').querySelector('button[type="submit"]');
     userEvent.type(await this.screen.findByPlaceholderText('List name...'), name);
     userEvent.click(addListButton);
+  }
+
+  removeList(name) {
+    const removeBtn = this.screen.getByText(name).parentElement.querySelector('button.link-danger');
+    userEvent.click(removeBtn);
   }
 }
 
 beforeEach(() => {
-  const { container } = render(App(defaultState));
-  appContainer = container;
+  render(App(defaultState));
   todoListPage = new TodoListPage(screen);
 });
 
@@ -89,8 +92,9 @@ describe('basic positive scenarios', () => {
   });
 
   test('general task flow', async () => {
-    await todoListPage.addTask('new task');
-    expect(await screen.findByText('new task')).toBeInTheDocument();
+    const text = 'new task';
+    await todoListPage.addTask(text);
+    expect(await screen.findByText(text)).toBeInTheDocument();
 
     todoListPage.toggleTheOnlyTask();
     const checkbox = todoListPage.getCheckboxElement();
@@ -100,10 +104,22 @@ describe('basic positive scenarios', () => {
     expect(await todoListPage.emptyCurrentListSelector()).toBeInTheDocument();
   });
 
-  test('create new list', async () => {
-    const name = 'newlist';
-    await todoListPage.addList(name);
-    expect(await screen.findByText(name)).toBeInTheDocument();
+  test('general list flow', async () => {
+    await todoListPage.addTask('task in the old list');
+
+    const listName = 'newlist';
+    await todoListPage.addList(listName);
+    expect(await screen.findByText(listName)).toBeInTheDocument();
+    expect(await todoListPage.emptyCurrentListSelector()).toBeInTheDocument();
+
+    const taskText = 'new task in the new list';
+    await todoListPage.addTask(taskText);
+
+    await todoListPage.removeList(listName);
+    await waitForElementToBeRemoved(() => screen.getByText(listName));
+    // await waitForElementToBeRemoved(() => screen.getByText(taskText));
+    // expect(screen.getByText(listName)).not.toBeInTheDocument();
+    // expect(screen.getByText(taskText)).not.toBeInTheDocument();
   });
 });
 
