@@ -1,4 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import {
+  render, screen, waitFor,
+} from '@testing-library/react';
 import App from '@hexlet/react-todo-app-with-backend';
 import '@testing-library/jest-dom/extend-expect';
 import { setupServer } from 'msw/node';
@@ -35,41 +37,82 @@ afterEach(() => server.resetHandlers());
 // Clean up after the tests are finished.
 afterAll(() => server.close());
 
+let todoListPage;
+let appContainer;
+class TodoListPage {
+  constructor(appScreen) {
+    this.screen = appScreen;
+  }
+
+  emptyCurrentListSelector() {
+    return this.screen.findByText('Tasks list is empty');
+  }
+
+  async addTask(text) {
+    userEvent.type(await this.screen.findByPlaceholderText('Please type text...'), text);
+    userEvent.click(await this.screen.findByRole('button', { name: 'Add' }));
+  }
+
+  async deleteTheOnlyTask() {
+    const removeButton = await this.screen.getByRole('button', { name: 'Remove' });
+    userEvent.click(removeButton);
+  }
+
+  getCheckboxElement() {
+    return this.screen.getByRole('checkbox');
+  }
+
+  toggleTheOnlyTask() {
+    const checkbox = this.getCheckboxElement();
+    userEvent.click(checkbox);
+  }
+
+  async addList(name) {
+    const addListButton = appContainer.querySelector('button[type="submit"]');
+    userEvent.type(await this.screen.findByPlaceholderText('List name...'), name);
+    userEvent.click(addListButton);
+  }
+}
+
 beforeEach(() => {
-  render(App(defaultState));
+  const { container } = render(App(defaultState));
+  appContainer = container;
+  todoListPage = new TodoListPage(screen);
 });
 
-describe('happy path', () => {
-  test('todo page loads', () => {
+describe('basic positive scenarios', () => {
+  test('todo page loads', async () => {
     screen.getByText('Hexlet Todos');
-
     expect(screen.getByTestId('list-form')).toHaveTextContent('add list');
     expect(screen.getByTestId('task-form')).toHaveTextContent('New task');
-    screen.getByText('Tasks list is empty');
+    expect(await todoListPage.emptyCurrentListSelector()).toBeInTheDocument();
   });
 
+  test('general task flow', async () => {
+    await todoListPage.addTask('new task');
+    expect(await screen.findByText('new task')).toBeInTheDocument();
+
+    todoListPage.toggleTheOnlyTask();
+    const checkbox = todoListPage.getCheckboxElement();
+    await waitFor(() => expect(checkbox).toBeChecked());
+
+    await todoListPage.deleteTheOnlyTask();
+    expect(await todoListPage.emptyCurrentListSelector()).toBeInTheDocument();
+  });
+
+  test('create new list', async () => {
+    const name = 'newlist';
+    await todoListPage.addList(name);
+    expect(await screen.findByText(name)).toBeInTheDocument();
+  });
+});
+
+describe('negative scenarios', () => {
   test('api error', async () => {
     server.use(
       rest.post('/api/v1/lists/:id/tasks', (req, res, ctx) => res(ctx.status(500))),
     );
-    userEvent.type(await screen.findByPlaceholderText('Please type text...'), 'new task');
-    userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+    await todoListPage.addTask('new task');
     expect(await screen.findByText('Network error')).toBeInTheDocument();
-  });
-
-  test('general task flow', async () => {
-    const taskInput = await screen.getByPlaceholderText('Please type text...');
-    userEvent.type(taskInput, 'new task');
-    const addButton = await screen.getByRole('button', { name: 'Add' });
-    userEvent.click(addButton);
-    expect(await screen.findByText('new task')).toBeInTheDocument();
-
-    const checkbox = screen.getByRole('checkbox');
-    userEvent.click(checkbox);
-    await waitFor(() => expect(checkbox).toBeChecked());
-
-    const removeButton = await screen.getByRole('button', { name: 'Remove' });
-    userEvent.click(removeButton);
-    expect(await screen.findByText('Tasks list is empty')).toBeInTheDocument();
   });
 });

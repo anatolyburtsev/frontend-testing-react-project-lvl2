@@ -41,5 +41,27 @@ export default (initialState) => {
         ctx.status(204),
       );
     }),
+
+    rest.post('/api/v1/lists', (req, res, ctx) => {
+      const { name } = req.body;
+      const list = {
+        name,
+        id: getNextId(),
+        removable: true,
+      };
+      state.lists.push(list);
+      return res(
+        ctx.status(201),
+        ctx.json(list),
+      );
+    }),
+
+    rest.delete('/api/v1/lists/:id', (req, res, ctx) => {
+      const id = Number(req.params.id);
+      state.lists = state.lists.filter((list) => list.id !== id);
+      return res(
+        ctx.status(204),
+      );
+    }),
   ];
 };
