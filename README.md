@@ -26,3 +26,6 @@ $ make test
 ```
 [![asciicast](https://asciinema.org/a/w4HSTamJw9zHFVRjebkFThsU4.svg)](https://asciinema.org/a/w4HSTamJw9zHFVRjebkFThsU4)
 
+
+[![asciicast](https://asciinema.org/a/qop07cRK7e2VgHTMHFtFxmXZt.svg)](https://asciinema.org/a/qop07cRK7e2VgHTMHFtFxmXZt)
+
