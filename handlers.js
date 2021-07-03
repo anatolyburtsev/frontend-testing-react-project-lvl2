@@ -1,6 +1,6 @@
 import { rest } from 'msw';
 import _ from 'lodash';
-import {StatusCodes} from "http-status-codes";
+import { StatusCodes } from 'http-status-codes';
 
 const getNextId = () => Number(_.uniqueId());
 

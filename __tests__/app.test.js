@@ -6,8 +6,8 @@ import '@testing-library/jest-dom/extend-expect';
 import { setupServer } from 'msw/node';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
+import { StatusCodes } from 'http-status-codes';
 import handlers from '../handlers';
-import {StatusCodes} from "http-status-codes";
 
 const defaultState = {
   lists: [
