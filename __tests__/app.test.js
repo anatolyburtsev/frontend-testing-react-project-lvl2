@@ -16,10 +16,10 @@ let todoListPage;
 beforeEach(() => {
   const defaultState = {
     lists: [
-      { id: 7, name: 'primary', removable: false },
+      { id: 70, name: 'primary', removable: false },
     ],
     tasks: [],
-    currentListId: 7,
+    currentListId: 70,
   };
 
   server = setupServer(...handlers(defaultState));
@@ -27,6 +27,8 @@ beforeEach(() => {
   render(App(defaultState));
   todoListPage = new TodoListPage(screen);
 });
+
+afterEach(() => server.resetHandlers());
 
 afterAll(() => server.close());
 
@@ -76,6 +78,15 @@ describe('basic positive scenarios', () => {
     userEvent.click(screen.getByText('primary'));
     expect(await screen.findByText(oldListTaskText)).toBeInTheDocument();
     expect(screen.getByText('primary')).toHaveClass('link-primary');
+  });
+
+  test('add button should be disabled during submit', async () => {
+    const taskText = 'new task text';
+    const button = await screen.findByRole('button', { name: 'Add' });
+    await todoListPage.addTask(taskText);
+    expect(button).toBeDisabled();
+    await screen.findByText(taskText);
+    expect(button).toBeEnabled();
   });
 });
 
