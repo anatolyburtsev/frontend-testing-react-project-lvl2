@@ -10,31 +10,25 @@ import { StatusCodes } from 'http-status-codes';
 import handlers from '../src/mock/handlers';
 import TodoListPage from '../src/TodoListPage';
 
-const defaultState = {
-  lists: [
-    { id: 7, name: 'primary', removable: false },
-  ],
-  tasks: [],
-  currentListId: 7,
-};
-
-const server = setupServer(...handlers(defaultState));
-// Establish API mocking before all tests.
-beforeAll(() => server.listen());
-
-// Reset any request handlers that we may add during the tests,
-// so they don't affect other tests.
-afterEach(() => server.resetHandlers());
-
-// Clean up after the tests are finished.
-afterAll(() => server.close());
-
+let server;
 let todoListPage;
 
 beforeEach(() => {
+  const defaultState = {
+    lists: [
+      { id: 7, name: 'primary', removable: false },
+    ],
+    tasks: [],
+    currentListId: 7,
+  };
+
+  server = setupServer(...handlers(defaultState));
+  server.listen();
   render(App(defaultState));
   todoListPage = new TodoListPage(screen);
 });
+
+afterAll(() => server.close());
 
 describe('basic positive scenarios', () => {
   test('todo page loads', async () => {
