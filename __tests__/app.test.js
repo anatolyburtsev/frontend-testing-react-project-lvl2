@@ -68,14 +68,6 @@ class TodoListPage {
       .parentElement.querySelector("input[type='checkbox']");
   }
 
-  // async toggleTask(taskText) {
-  //   const checkbox = (await this.screen.findByText(taskText)).parentElement
-  //       .querySelector("label.pointer");
-  //   act(() => {
-  //     userEvent.click(checkbox);
-  //   });
-  // }
-
   async addList(name) {
     const addListButton = this.screen.getByTestId('list-form').querySelector('button[type="submit"]');
     if (name) userEvent.type(await this.screen.findByPlaceholderText('List name...'), name);
