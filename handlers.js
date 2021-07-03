@@ -1,5 +1,6 @@
 import { rest } from 'msw';
 import _ from 'lodash';
+import {StatusCodes} from "http-status-codes";
 
 const getNextId = () => Number(_.uniqueId());
 
@@ -17,7 +18,7 @@ export default (initialState) => {
       };
       state.tasks.push(task);
       return res(
-        ctx.status(201),
+        ctx.status(StatusCodes.CREATED),
         ctx.json(task),
       );
     }),
@@ -29,7 +30,7 @@ export default (initialState) => {
       task.completed = completed;
       task.touched = Date.now();
       return res(
-        ctx.status(201),
+        ctx.status(StatusCodes.CREATED),
         ctx.json(task),
       );
     }),
@@ -38,7 +39,7 @@ export default (initialState) => {
       const id = Number(req.params.id);
       state.tasks = state.tasks.filter((t) => t.id !== id);
       return res(
-        ctx.status(204),
+        ctx.status(StatusCodes.NO_CONTENT),
       );
     }),
 
@@ -51,7 +52,7 @@ export default (initialState) => {
       };
       state.lists.push(list);
       return res(
-        ctx.status(201),
+        ctx.status(StatusCodes.CREATED),
         ctx.json(list),
       );
     }),
@@ -60,7 +61,7 @@ export default (initialState) => {
       const id = Number(req.params.id);
       state.lists = state.lists.filter((list) => list.id !== id);
       return res(
-        ctx.status(204),
+        ctx.status(StatusCodes.NO_CONTENT),
       );
     }),
   ];

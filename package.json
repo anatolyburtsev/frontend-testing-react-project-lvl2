@@ -27,8 +27,9 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.1.9",
-    "msw": "^0.30.0",
-    "lodash": "^4.17.21"
+    "http-status-codes": "^2.1.4",
+    "lodash": "^4.17.21",
+    "msw": "^0.30.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.14.5",

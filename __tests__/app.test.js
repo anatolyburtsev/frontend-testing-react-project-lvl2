@@ -7,25 +7,17 @@ import { setupServer } from 'msw/node';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import handlers from '../handlers';
+import {StatusCodes} from "http-status-codes";
 
 const defaultState = {
   lists: [
     { id: 7, name: 'primary', removable: false },
   ],
-  tasks: [
-    // {
-    //   text: 'secondary task',
-    //   id: 8,
-    //   listId: 8,
-    //   completed: false,
-    //   touched: Date.now(),
-    // },
-  ],
+  tasks: [],
   currentListId: 7,
 };
 
 const server = setupServer(...handlers(defaultState));
-//
 // Establish API mocking before all tests.
 beforeAll(() => server.listen());
 
@@ -131,6 +123,7 @@ describe('basic positive scenarios', () => {
     await todoListPage.removeList(listName);
     await waitForElementToBeRemoved(() => screen.getByText(listName));
     // previous list doesn't become active in test, but does in browser
+    // activate it explicitly
     userEvent.click(screen.getByText('primary'));
     expect(await screen.findByText(oldListTaskText)).toBeInTheDocument();
     expect(screen.getByText('primary')).toHaveClass('link-primary');
@@ -140,7 +133,7 @@ describe('basic positive scenarios', () => {
 describe('negative scenarios', () => {
   test('task api error', async () => {
     server.use(
-      rest.post('/api/v1/lists/:id/tasks', (req, res, ctx) => res(ctx.status(500))),
+      rest.post('/api/v1/lists/:id/tasks', (req, res, ctx) => res(ctx.status(StatusCodes.INTERNAL_SERVER_ERROR))),
     );
     await todoListPage.addTask('new task');
     expect(await screen.findByText('Network error')).toBeInTheDocument();
@@ -148,7 +141,7 @@ describe('negative scenarios', () => {
 
   test('list api error', async () => {
     server.use(
-      rest.post('/api/v1/lists', (req, res, ctx) => res(ctx.status(500))),
+      rest.post('/api/v1/lists', (req, res, ctx) => res(ctx.status(StatusCodes.INTERNAL_SERVER_ERROR))),
     );
     await todoListPage.addList('new list');
     expect(await screen.findByText('Network error')).toBeInTheDocument();
