@@ -17,14 +17,13 @@ class TodoListPage {
 
   async deleteTask(taskText) {
     const removeButton = (await this.screen.findByText(taskText))
-      .parentElement.parentElement.parentElement
-      .querySelector('button.btn-danger');
+      .closest('li').querySelector("button.btn-danger");
     userEvent.click(removeButton);
   }
 
   async getCheckboxElement(taskText) {
     return (await this.screen.findByText(taskText))
-      .parentElement.querySelector("input[type='checkbox']");
+        .closest('li').querySelector("input[type='checkbox']");
   }
 
   async addList(name) {
@@ -34,7 +33,8 @@ class TodoListPage {
   }
 
   removeList(name) {
-    const removeBtn = this.screen.getByText(name).parentElement.querySelector('button.link-danger');
+    const removeBtn = this.screen.getByText(name).closest('li')
+        .querySelector('button.link-danger');
     userEvent.click(removeBtn);
   }
 }
