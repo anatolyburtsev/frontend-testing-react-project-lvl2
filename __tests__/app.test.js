@@ -88,6 +88,39 @@ describe('basic positive scenarios', () => {
     await screen.findByText(taskText);
     expect(button).toBeEnabled();
   });
+
+  test('finished task goes to the end of the list', async () => {
+    const task1 = 'task 1 text';
+    const task2 = 'task 2 text';
+    const task3 = 'task 3 text';
+    await todoListPage.addTask(task1);
+    expect(await screen.findByText(task1)).toBeInTheDocument();
+    await todoListPage.addTask(task2);
+    expect(await screen.findByText(task2)).toBeInTheDocument();
+    await todoListPage.addTask(task3);
+    expect(await screen.findByText(task3)).toBeInTheDocument();
+
+    const checkbox2 = await todoListPage.getCheckboxElement(task2);
+    userEvent.click(checkbox2);
+    await waitFor(() => expect(checkbox2).toBeChecked());
+
+    const tasksElements = screen.getByTestId('tasks')
+      .querySelectorAll('li');
+    const tasksText = [...tasksElements].map((el) => el.textContent);
+
+    expect(tasksText[2]).toContain(task2);
+
+    const checkbox3 = await todoListPage.getCheckboxElement(task3);
+    userEvent.click(checkbox3);
+    await waitFor(() => expect(checkbox3).toBeChecked());
+
+    const tasksElements2 = screen.getByTestId('tasks')
+      .querySelectorAll('li');
+    const tasksText2 = [...tasksElements2].map((el) => el.textContent);
+
+    expect(tasksText2[1]).toContain(task3);
+    expect(tasksText2[2]).toContain(task2);
+  });
 });
 
 describe('negative scenarios', () => {
